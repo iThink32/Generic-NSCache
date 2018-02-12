@@ -18,7 +18,6 @@ now to retrieve it
 cacheManager.fetchObject(name: unwrappedFilename)
 ```
 
-#### 
-Note:-
+#### Note:-
 i know you will get an optional UIImage and that you have to check for an optional but i have reduced a type cast and moreover 
 UIImageView takes an optional uiimage so you dont even need this cast. :p
