@@ -1,6 +1,5 @@
 //
 //  GenericCache.swift
-//  RynlyUI
 //
 //  Created by N A Shashank on 2/12/18.
 //  Copyright © 2018 N A Shashank. All rights reserved.
