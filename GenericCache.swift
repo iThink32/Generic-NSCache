@@ -1,27 +1,65 @@
-//
-//  GenericCache.swift
-//
-//  Created by N A Shashank on 2/12/18.
-//  Copyright © 2018 N A Shashank. All rights reserved.
-//
+import Foundation
 
-import UIKit
+final class CacheableKey<T: Hashable>: NSObject{
+    let value: T
+    init(value: T){
+        self.value = value
+    }
+    
+    override var hash: Int{
+        return self.value.hashValue
+    }
+    
+    override func isEqual(_ object: Any?) -> Bool {
+        guard let castedValue = object as? CacheableKey<T> else{
+            return false
+        }
+        return castedValue.value == self.value
+    }
+}
 
-public class GenericCache<cacheObjectType> where cacheObjectType:AnyObject {
-    
-    let cache = NSCache<NSString,cacheObjectType>()
-    
-    public func fetchObject(name:String) -> cacheObjectType? {
-        return cache.object(forKey: name as NSString)
+final class CacheableValue<T>: NSDiscardableContent{
+    let value: T
+    private var accessCounter = true
+    init(value: T){
+        self.value = value
     }
     
-    public func saveObject(obj1:cacheObjectType,name:String) {
-        self.cache.setObject(obj1, forKey: NSString(string:name))
+    func beginContentAccess() -> Bool{
+        return self.accessCounter
     }
-    
-    public init() {
-        // nothing to do here
+
+    func endContentAccess(){
+        self.accessCounter = false
     }
+
+    func discardContentIfPossible(){
+        
+    }
+
+    func isContentDiscarded() -> Bool{
+        return self.accessCounter == false
+    }
+}
+
+final class GenericInMemoryCache<T: Hashable,V>{
+    private let cache = NSCache<CacheableKey<T>, CacheableValue<V>>()
     
-    
+    subscript(key: T) -> V?{
+        set{
+            guard let unwrappedValue = newValue else{
+                return
+            }
+            let value = CacheableValue(value: unwrappedValue)
+            let key = CacheableKey(value: key)
+            self.cache.setObject(value, forKey: key)
+        }
+        get{
+            let key = CacheableKey(value: key)
+            guard let reqdValue: CacheableValue<V> = self.cache.object(forKey: key) else{
+                return nil
+            }
+            return reqdValue.value
+        }
+    }
 }
