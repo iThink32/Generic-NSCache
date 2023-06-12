@@ -1,13 +1,13 @@
 # Generic-NSCache
-## A generic NSCache that you can use without the headache of Optionals
+### A generic NSCache
 
-### Usage
+#### Usage
 
-create an instance of cache manager and save your file , here i am using UIImage as the object type you can use whatever type you want just make sure your type is a subclass of AnyObject
+create an instance of GenericMemoryCache and save your file
 
 ```
-let cacheManager = GenericCache<UIImage>()
-cacheManager.saveObject(obj1: image, name: unwrappedFilename)
+private let imageCache = GenericInMemoryCache<String, UIImage>()
+imageCache[identifier] = image // identifier is the url of the image or anything that conforms to hashable
 ```
 
 thats it !! your file is saved
@@ -15,9 +15,9 @@ thats it !! your file is saved
 now to retrieve it
 
 ```
-cacheManager.fetchObject(name: unwrappedFilename)
+let cachedImage = imageCache[identifier] 
 ```
 
 #### Note:-
-i know you will get an optional UIImage and that you have to check for an optional but i have reduced a type cast and moreover 
-UIImageView and Buttons takes an optional uiimage so you dont even need this cast. :p
+This cache takes can store any custom object as its value. Moreover it can also store any key as its value provided it confirms to AnyHashable.
+I have also implemented NSDiscardableContent so as to prevent its value from being purged on moving to the background.
